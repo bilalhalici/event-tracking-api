@@ -1,29 +1,69 @@
 # Event Tracking API (NestJS + Prisma + PostgreSQL)
 
-A backend service for collecting and querying analytics events.  
-This project demonstrates a production‑style backend architecture using **NestJS**, **Prisma**, and **PostgreSQL**.
+A backend service for collecting and querying analytics events.
 
-The API supports:
+Modern SaaS and e‑commerce products collect user interaction events
+(page views, product clicks, purchases, etc.) for analytics and marketing automation.
 
-- Event ingestion
-- JWT authentication
-- Event querying with filtering
-- Pagination
-- Request validation
-- Interactive API documentation with Swagger
+This project demonstrates how a backend service can ingest, store and query these events using a modern backend stack.
 
 ---
 
-# Features
+# Why This Project Exists
+
+Analytics systems rely on collecting large volumes of interaction events. These events must be:
+
+- ingested efficiently
+- stored reliably
+- queried with filtering and pagination
+
+This project demonstrates a simplified version of an **event ingestion backend** that powers analytics and product insights.
+
+---
+
+# Key Features
 
 - **JWT Authentication** (register / login)
-- **Batch Event Ingestion API**
+- **Batch Event Ingestion API** for efficient event collection
 - **Event Filtering** (by event name)
 - **Pagination support**
 - **DTO Validation** using class-validator
 - **Prisma ORM** with PostgreSQL
 - **Dockerized PostgreSQL database**
 - **Swagger API Documentation**
+
+---
+
+# Batch Event Ingestion
+
+The API supports **batch event ingestion**, allowing clients to send multiple events in a single request for better performance.
+
+Instead of sending each event individually, clients can send many events at once.
+
+---
+
+# Example Event Ingestion
+
+POST /events/batch
+
+```
+{
+  "events": [
+    {
+      "eventName": "page_view",
+      "properties": {
+        "page": "/pricing"
+      }
+    },
+    {
+      "eventName": "button_click",
+      "properties": {
+        "button": "buy-now"
+      }
+    }
+  ]
+}
+```
 
 ---
 
@@ -60,32 +100,63 @@ Protected Endpoints
 
 ---
 
-# Getting Started
+# API Endpoints
 
-Clone the repository
+| Method | Endpoint       | Description                              |
+| ------ | -------------- | ---------------------------------------- |
+| POST   | /auth/register | Create a new user                        |
+| POST   | /auth/login    | Authenticate user and return JWT         |
+| POST   | /events/batch  | Ingest multiple events                   |
+| GET    | /events        | Query events with pagination and filters |
+
+Supported query parameters:
+
+```
+page
+limit
+eventName
+```
+
+Example:
+
+```
+GET /events?page=1&limit=10&eventName=page_view
+```
+
+---
+
+# Example Response
+
+```
+{
+  "data": [...],
+  "page": 1,
+  "limit": 10,
+  "count": 10,
+  "total": 42
+}
+```
+
+---
+
+# Local Development Setup
+
+## Clone the repository
 
 ```
 git clone https://github.com/yourusername/event-tracking-api.git
 cd event-tracking-api
 ```
 
-Install dependencies
+## Install dependencies
 
 ```
 npm install
 ```
 
-Run the development server
+## Create environment variables
 
-```
-npm run start:dev
-```
-
----
-
-# Environment Variables
-
-Create a `.env` file in the root directory:
+Create a `.env` file in the project root:
 
 ```
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/event_tracking"
@@ -107,9 +178,7 @@ docker run --name event-tracking-postgres \
 
 ---
 
-# Database Migration
-
-Run Prisma migration:
+# Run Database Migration
 
 ```
 npx prisma migrate dev
@@ -117,48 +186,10 @@ npx prisma migrate dev
 
 ---
 
-# API Endpoints
-
-## Authentication
+# Start the Server
 
 ```
-POST /auth/register
-POST /auth/login
-```
-
-## Events
-
-```
-POST /events/batch
-GET /events
-```
-
-Query parameters supported:
-
-```
-page
-limit
-eventName
-```
-
-Example request:
-
-```
-GET /events?page=1&limit=10&eventName=page_view
-```
-
----
-
-# Example Response
-
-```
-{
-  "data": [...],
-  "page": 1,
-  "limit": 10,
-  "count": 10,
-  "total": 42
-}
+npm run start:dev
 ```
 
 ---
